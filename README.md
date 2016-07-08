@@ -103,6 +103,7 @@ Example:
 
 ```
 TM_eslint_use_eslintrc = false
+```
 
 
 ### `TM_eslint_fix` ###
