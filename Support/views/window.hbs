@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+  <title>ESLint Bundle</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{css.github}}" type="text/css">
+  <link rel="stylesheet" href="{{css.main}}" type="text/css">
+</head>
+<body class="report markdown-body">
+
+  {{#unless messages }}
+
+    <header>
+      <h1><span class="eslint-logo"><img src="{{eslintLogo}}"> ESLint <span class="eslint-version" title="{{eslintPath}}">v{{eslintVersion}}</span></span></h1>
+      <p class="meta"><b>No issues</b> found in <b>{{filepathRel}}</b></p>
+    </header>
+
+  {{else}}
+
+    <header>
+      <h1><span class="eslint-logo"><img src="{{eslintLogo}}"> ESLint <span class="eslint-version" title="{{eslintPath}}">v{{eslintVersion}}</span></span></h1>
+      <p class="meta"><b>{{issueCount}} issue{{#isPlural}}s{{/isPlural}}</b> found in <b>{{filepathRel}}</b></p>
+    </header>
+
+    <div class="main">
+
+      <ol class="messages">
+
+      {{#messages}}
+
+  			<li class="issue severity-{{this.severity}}">
+
+          <div class="source-wrapper" data-file="txmt://open?url=file://{{../filepathAbs}}&line={{this.line}}&column={{this.column}}">
+            <p class="location">
+
+              <span class="line">Line: {{this.line}}:{{this.column}}</span>
+
+              {{#if this.ruleId }}
+              <span class="rule-id">Rule: <a href="http://eslint.org/docs/rules/{{this.ruleId}}" title="Open docs for {{this.ruleId}}">{{this.ruleId}}</a></span>
+              {{/if}}
+
+            </p>
+
+            <p class="message">{{this.message}}</p>
+
+            <pre class="source">{{this.source}}</pre>
+
+          </div>
+
+  			</li>
+
+    	{{/messages}}
+
+      </ol>
+
+    </div>
+
+  {{/unless}}
+
+  <footer>
+    <p><a href="http://eslint.org/" title="ESLint - Pluggable JavaScript linter">ESLint</a> Copyright jQuery Foundation and other contributors, <a href="https://jquery.org/">https://jquery.org/</a></p>
+  </footer>
+
+  <script>
+
+    var issues = document.querySelectorAll( '.source-wrapper' );
+
+    [].forEach.call( issues, function ( issue ) {
+
+      issue.addEventListener( 'click', function (e) {
+
+        var target = e.target;
+        var currentTarget = e.currentTarget;
+        var url = currentTarget.getAttribute( 'data-file' );
+
+        if ( target.classList.contains( 'message-code' ) ) return;
+
+        window.location.assign( url );
+      });
+
+    });
+
+  </script>
+</body>
+</html>

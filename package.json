@@ -1,0 +1,19 @@
+{
+  "name": "eslint.tmbundle",
+  "version": "0.0.0",
+  "description": "ESLint Bundle for Textmate",
+  "main": "./Support/index.js",
+  "author": "Ryan Fitzer",
+  "license": "MIT",
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ryanfitzer/eslint.tmbundle"
+  },
+  "dependencies": {
+    "github-markdown-css": "^2.3.0",
+    "handlebars": "^4.0.5"
+  }
+}

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>saveActiveFile</string>
+	<key>command</key>
+	<string>#!/usr/bin/env node
+
+const bundle = require( process.env.TM_BUNDLE_SUPPORT );
+
+bundle({
+    view: 'window'
+});</string>
+	<key>input</key>
+	<string>document</string>
+	<key>inputFormat</key>
+	<string>text</string>
+	<key>keyEquivalent</key>
+	<string>^l</string>
+	<key>name</key>
+	<string>Lint</string>
+	<key>outputCaret</key>
+	<string>afterOutput</string>
+	<key>outputFormat</key>
+	<string>html</string>
+	<key>outputLocation</key>
+	<string>newWindow</string>
+	<key>scope</key>
+	<string>source.js</string>
+	<key>uuid</key>
+	<string>C20A73AE-9CDA-4A29-8500-9E2FB91C116B</string>
+	<key>version</key>
+	<integer>2</integer>
+</dict>
+</plist>

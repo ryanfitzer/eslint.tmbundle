@@ -1,0 +1,123 @@
+/*
+Github Additions
+---------------------------*/
+.markdown-body {
+    padding:30px;
+    margin:0 auto;
+    min-width:200px;
+    max-width:790px;
+    background-color:#fff;
+}
+.markdown-body h1:first-child {
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+/*
+Custom Rules
+---------------------------*/
+body {
+    color: #333;
+}
+header {
+    border-bottom: 1px solid #eee;
+}
+header .eslint-logo {
+    font-weight: 400;
+    letter-spacing: -1.8px;
+    color: rgb( 102, 102, 102 );
+}
+header .eslint-logo > img {
+    width: 51px;
+    float: left;
+    height: 39px;
+    margin-left: -8px;
+}
+header .eslint-logo .eslint-version {
+    font-size: 22px;
+    letter-spacing: 0;
+}
+header .meta {
+    font-size: 12px;
+    margin: -5px 0 5px;
+}
+header .meta span {
+    cursor: help;
+}
+.main {
+    margin: 30px 0 0;
+}
+.main .messages {
+    padding-left: 0;
+    list-style: none;
+}
+.issue {
+    margin:0 0 30px;
+}
+.message,
+.location {
+    margin: 0 0 0 !important;
+}
+.location {
+    font-size: 12px;
+    position: relative;
+    padding: 5px 5px 0;
+    text-transform: uppercase;
+    font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+}
+.message {
+    padding: 8px;
+    font-size: 14px;
+    text-transform: none;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-top: 1px solid #ededed;
+    border-left: 1px solid #ededed;
+    border-right: 1px solid #ededed;
+}
+.severity-1 .line:before {
+    content: '⚠️ ';
+}
+.severity-2 .line:before {
+    content: '🚫️ ';
+}
+.rule-id {
+    right:10px;
+    cursor:text;
+    position:absolute;
+}
+.source-wrapper {
+    cursor:pointer;
+}
+.severity-1 .source-wrapper:hover pre {
+    background: rgba( 255, 225, 67, 0.5 );
+}
+.severity-2 .source-wrapper:hover pre {
+    background: rgba( 255, 0, 0, 0.5 );
+}
+.source {
+    border-left: 1px solid #ededed;
+    border-right: 1px solid #ededed;
+    border-bottom: 1px solid #ededed;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+}
+.severity-1 .source-wrapper:hover .message,
+.severity-1 .source-wrapper:hover .source {
+    border-color: rgb( 255, 225, 67 );
+}
+.severity-2 .source-wrapper:hover .message,
+.severity-2 .source-wrapper:hover .source {
+    border-color: rgb( 255, 0, 0 );
+}
+footer {
+    padding: 8px;
+    font-size: 12px;
+    margin-top: 40px;
+    text-align: center;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+}
+footer p {
+    margin-bottom: 0 !important;
+}
