@@ -103,7 +103,6 @@ Example:
 
 ```
 TM_eslint_use_eslintrc = false
-```
 
 
 ### `TM_eslint_fix` ###
@@ -148,6 +147,7 @@ Example:
 ```
 TM_eslint_ignore_pattern = 'first/pattern, second/pattern'
 ```
+
 
 ### `TM_eslint_cwd` ###
   

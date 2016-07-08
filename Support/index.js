@@ -9,19 +9,14 @@ const TMbundleSupport = process.env.TM_BUNDLE_SUPPORT;
 const TMfilePath = process.env.TM_FILEPATH;
 const TMprojectDir = process.env.TM_PROJECT_DIRECTORY;
 
-const TMeslintPath = process.env.TM_eslint_path;
 const TMcwd = process.env.TM_eslint_cwd;
 const TMfix = process.env.TM_eslint_fix;
-const TMuseEslintrc = process.env.TM_eslint_use_eslintrc;
-const TMextensions = process.env.TM_eslint_extensions;
+const TMeslintPath = process.env.TM_eslint_path;
 const TMconfigFile = process.env.TM_eslint_config_file;
-const TMbaseConfigFile = process.env.TM_eslint_base_config_file;
 const TMignoreFile = process.env.TM_eslint_ignore_file;
+const TMuseEslintrc = process.env.TM_eslint_use_eslintrc;
 const TMignorePattern = process.env.TM_eslint_ignore_pattern;
-const TMcache = process.env.TM_eslint_cache;
-const TMcacheLocation = process.env.TM_eslint_cache_location;
-const TMcacheFile = process.env.TM_eslint_cache_file;
-const TMallowInlineConfig = process.env.TM_eslint_allow_inline_config;
+const TMbaseConfigFile = process.env.TM_eslint_base_config_file;
 
 const eslintPathRel = TMeslintPath ? TMeslintPath : 'node_modules/eslint';
 const eslintPath = path.resolve( TMprojectDir, eslintPathRel );
@@ -39,9 +34,7 @@ function createCLI() {
     const options = {
         cwd: TMcwd ? path.resolve( TMprojectDir, TMcwd ) : TMprojectDir,
         fix: /true/i.test( TMfix ) ? true : false,
-        cache: /false/i.test( TMcache ) ? false : true,
-        useEslintrc: /false/i.test( TMuseEslintrc ) ? false : true,
-        allowInlineConfig: /true/i.test( TMallowInlineConfig ) ? true : false,
+        useEslintrc: /false/i.test( TMuseEslintrc ) ? false : true
     };
 
     // Fail silently if no eslint is found
@@ -50,21 +43,6 @@ function createCLI() {
     }
     catch ( err ) {
         return false;
-    }
-
-    if ( TMcacheLocation ) {
-        options.cacheLocation = TMcacheLocation;
-    }
-
-    if ( TMcacheFile ) {
-        options.cacheFile = path.resolve( TMprojectDir, TMcacheFile );
-    }
-
-    if ( TMextensions ) {
-
-        options.extensions = TMextensions
-        .split( ',' )
-        .map( path => path.trim() );
     }
 
     if ( TMignorePattern ) {
