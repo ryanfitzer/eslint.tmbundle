@@ -10,18 +10,18 @@ Lint your JavaScript files with [ESLint](http://eslint.org).
 
 ## Features ##
 
-  - Uses your project's `eslint` package. This enables you to lint with the version of ESLint that each project project uses.
+  - Uses your project's `eslint` package. This enables you to lint with the version of ESLint specific to each project.
 
   - Configurable per project via `.tm_properties`.
 
   - Lints every time you save the current document and shows errors via an unobtrusive tooltip. No tooltip is shown for warnings.
 
-  - Lint the current document with the shortcut `⌃L` to see expanded the view, which includes:
+  - Lint the current document with the shortcut `⌃L` to see the expanded view, which includes:
     - ESLint version
     - path to current document
-    - issue severity ("warn" vs. "error")
-    - link to documentation for rule related to reported issue
-    - link to focus cursor to the line and column where to reported issue
+    - issue severity ("warn" ⚠️ vs. "error" 🚫️)
+    - link to documentation for rule related to the reported issue
+    - link to focus cursor to the line and column where to the reported issue
 
 
 
