@@ -13,7 +13,7 @@ const TMcwd = process.env.TM_eslint_cwd;
 const TMfix = process.env.TM_eslint_fix;
 const TMeslintPath = process.env.TM_eslint_path;
 const TMconfigFile = process.env.TM_eslint_config_file;
-const TMignoreFile = process.env.TM_eslint_ignore_file;
+const TMignorePath = process.env.TM_eslint_ignore_path;
 const TMuseEslintrc = process.env.TM_eslint_use_eslintrc;
 const TMignorePattern = process.env.TM_eslint_ignore_pattern;
 const TMbaseConfigFile = process.env.TM_eslint_base_config_file;
@@ -26,15 +26,14 @@ const eslintLogo = `file://${imagesPath}/eslint.svg`;
 const cssMain = `file://${viewsPath}/main.css?cacheBuster=${Date.now()}`;
 const cssGithub = `file://${TMbundleSupport}/../node_modules/github-markdown-css/github-markdown.css?cacheBuster=${Date.now()}`;
 
+let CLIEngine;
 
 function createCLI() {
 
-    let CLIEngine;
-
     const options = {
-        cwd: TMcwd ? path.resolve( TMprojectDir, TMcwd ) : TMprojectDir,
-        fix: /true/i.test( TMfix ) ? true : false,
-        useEslintrc: /false/i.test( TMuseEslintrc ) ? false : true
+        fix: false,
+        useEslintrc: true,
+        cwd: TMcwd ? path.resolve( TMprojectDir, TMcwd ) : TMprojectDir
     };
 
     // Fail silently if no eslint is found
@@ -45,6 +44,14 @@ function createCLI() {
         return false;
     }
 
+    if ( TMfix ) {
+        options.fix = /true/i.test( TMfix );
+    }
+
+    if ( TMuseEslintrc ) {
+        options.fix = /true/i.test( TMuseEslintrc );
+    }
+
     if ( TMignorePattern ) {
 
         options.ignorePattern = TMignorePattern
@@ -52,8 +59,8 @@ function createCLI() {
         .map( path => path.trim() );
     }
 
-    if ( TMignoreFile ) {
-        options.ignoreFile = path.resolve( TMprojectDir, TMignoreFile );
+    if ( TMignorePath ) {
+        options.ignorePath = path.resolve( TMprojectDir, TMignorePath );
     }
 
     if ( TMconfigFile ) {
@@ -118,6 +125,8 @@ module.exports = function ( config ) {
             Test each scenario to see if each scenario can be discerned from the error provided by ESLint.
         */
     }
+
+    if ( cli.options.fix ) CLIEngine.outputFixes( report );
 
     data = composeData( report );
 

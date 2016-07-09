@@ -111,7 +111,7 @@ TM_eslint_use_eslintrc = false
   - Type: `Boolean`
   - Default: `false`
 
-[Coming Soon] Output fixes source for errors and warnings that ESLint can fix. All rules in the [documentation](http://eslint.org/docs/rules) that show a wrench icon are fixable.
+Output fixes source for errors and warnings that ESLint can fix. All rules in the [documentation](http://eslint.org/docs/rules) that show a wrench icon are fixable.
 
 Example:
 
@@ -120,7 +120,7 @@ TM_eslint_eslint_fix = true
 ```
 
 
-### `TM_eslint_ignore_file` ###
+### `TM_eslint_ignore_path` ###
 
   - Type: `String`
   - Default: `null`
@@ -132,7 +132,7 @@ Use a non-default ignore file. From [Ignoring Files and Directories](http://esli
 Example:
 
 ```
-TM_eslint_ignore_file = 'path/to/ignore/file'
+TM_eslint_ignore_path = 'path/to/ignore/file'
 ```
 
 
