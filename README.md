@@ -2,11 +2,11 @@
 
 Lint your JavaScript files with [ESLint](http://eslint.org).
 
-Download latest [version](releases/latest).
+Download latest [version](/releases/latest).
 
-![](./Support/images/screenshot-window.png)
+![](Support/images/screenshot-window.png)
 
-![](./Support/images/screenshot-tooltip.png)
+![](Support/images/screenshot-tooltip.png)
 
 
 
