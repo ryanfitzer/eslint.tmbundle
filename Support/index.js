@@ -11,6 +11,7 @@ const TMprojectDir = process.env.TM_PROJECT_DIRECTORY;
 
 const TMcwd = process.env.TM_eslint_cwd;
 const TMfix = process.env.TM_eslint_fix;
+const TMdebug = process.env.TM_eslint_debug;
 const TMeslintPath = process.env.TM_eslint_path;
 const TMconfigFile = process.env.TM_eslint_config_file;
 const TMignorePath = process.env.TM_eslint_ignore_path;
@@ -24,7 +25,7 @@ const viewsPath = path.resolve( TMbundleSupport, 'views' );
 const imagesPath = path.resolve( TMbundleSupport, 'images' );
 const eslintLogo = `file://${imagesPath}/eslint.svg`;
 const cssMain = `file://${viewsPath}/main.css?cacheBuster=${Date.now()}`;
-const cssGithub = `file://${TMbundleSupport}/../node_modules/github-markdown-css/github-markdown.css?cacheBuster=${Date.now()}`;
+const scriptMain = `file://${viewsPath}/main.js?cacheBuster=${Date.now()}`;
 
 let CLIEngine;
 
@@ -41,6 +42,11 @@ function createCLI() {
         CLIEngine = require( eslintPath ).CLIEngine;
     }
     catch ( err ) {
+
+        if ( TMdebug ) {
+            process.stdout.write( `${err}` );
+        }
+
         return false;
     }
 
@@ -79,32 +85,49 @@ function composeData( report ) {
     let eslintVersion;
     const issueCount = report.errorCount + report.warningCount;
 
+    messages = report.results[0].messages.map( ( msg, index ) => {
+
+        const leadSpace = msg.source.match( /^\s*/ );
+        const count = leadSpace ? leadSpace[ 0 ].length : 0;
+        const pad = msg.column ? msg.column - count - 1 : 1;
+
+        msg.count = index + 1;
+        msg.isESLintRule = msg.ruleId && msg.ruleId.search( '/' ) < 0;
+        msg.pointer = `${Array( pad ).fill( '.' ).join( '' )}^`;
+        msg.source = msg.source.trim();
+        msg.messageHTML = msg.message.replace( /'(.*?)'/g, ( match, code ) => {
+            return `<code>${code}</code>`;
+        });
+
+        return msg;
+    });
+
     return {
         issueCount: issueCount,
         isPlural: issueCount > 1,
         errorCount: report.errorCount,
         warningCount: report.warningCount,
-        messages: report.results[0].messages,
+        messages: messages,
         file: path.parse( TMfilePath ).base,
         filepathAbs: TMfilePath,
         filepathRel: path.relative( TMprojectDir, TMfilePath ),
         eslintPath: eslintPath,
         eslintLogo: eslintLogo,
         eslintVersion: require( `${eslintPath}/package.json` ).version,
-        css: {
-            main: cssMain,
-            github: cssGithub
-        }
+        cssMain: cssMain,
+        scriptMain: scriptMain
     };
 }
 
 module.exports = function ( config ) {
 
-    let data;
     let error = false;
     let report = null;
     const cli = createCLI();
     const viewPath = path.join( TMbundleSupport, `${config.view}.hbs` );
+    let data = {
+        hrstart: config.hrstart
+    };
 
     if ( !cli || cli.isPathIgnored( TMfilePath ) ) {
         return;
@@ -115,7 +138,7 @@ module.exports = function ( config ) {
         report = cli.executeOnFiles( [ TMfilePath ] );
     }
     catch ( err ) {
-        error = err;
+
         /*
             TODO Possible errors that need to be handled:
                 - No configuration provided (root .eslintrc* or TM_eslint_base_config_file set).
@@ -124,6 +147,9 @@ module.exports = function ( config ) {
 
             Test each scenario to see if each scenario can be discerned from the error provided by ESLint.
         */
+        if ( TMdebug ) {
+            return process.stdout.write( `${err}` );
+        }
     }
 
     if ( cli.options.fix ) CLIEngine.outputFixes( report );
@@ -131,14 +157,17 @@ module.exports = function ( config ) {
     data = composeData( report );
 
     // Debug
-    // return process.stdout.write( `<pre>${JSON.stringify( cli, null, 2 )}</pre>` );
+    // return console.log( `<pre>${JSON.stringify( data, null, 2 )}</pre>`);
 
     if ( config.view === 'tooltip' && !data.errorCount ) return;
 
     fsp.readFile( `${viewsPath}/${config.view}.hbs` ).then( function ( src ) {
 
-        return process.stdout.write(
-            handlebars.compile( src )( composeData( report ) )
-        );
+        const template = handlebars.compile( src );
+        const hrend = process.hrtime( config.hrstart );
+
+        data.time = `${hrend[0]}s ${Math.floor( hrend[1]/1000000 )}ms`;
+
+        return process.stdout.write( template( data ) );
     });
 }

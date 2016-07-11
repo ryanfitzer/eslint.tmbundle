@@ -4,83 +4,57 @@
   <meta http-equiv="Content-type" content="text/html; charset=utf-8">
   <title>ESLint Bundle</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="{{css.github}}" type="text/css">
-  <link rel="stylesheet" href="{{css.main}}" type="text/css">
+  <link rel="stylesheet" href="{{cssMain}}" type="text/css">
 </head>
-<body class="report markdown-body">
+<body>
 
-  {{#unless messages }}
+  <header>
+    <h1><span class="eslint-logo"><img src="{{eslintLogo}}"> ESLint <span class="eslint-version" title="{{eslintPath}}">v{{eslintVersion}}</span></span></h1>
+    <p class="meta"><b>{{issueCount}} issue{{#isPlural}}s{{/isPlural}}</b> found in {{filepathRel}} in {{time}}</p>
+  </header>
 
-    <header>
-      <h1><span class="eslint-logo"><img src="{{eslintLogo}}"> ESLint <span class="eslint-version" title="{{eslintPath}}">v{{eslintVersion}}</span></span></h1>
-      <p class="meta"><b>No issues</b> found in <b>{{filepathRel}}</b></p>
-    </header>
+  <main>
 
-  {{else}}
+    <ol class="issues">
 
-    <header>
-      <h1><span class="eslint-logo"><img src="{{eslintLogo}}"> ESLint <span class="eslint-version" title="{{eslintPath}}">v{{eslintVersion}}</span></span></h1>
-      <p class="meta"><b>{{issueCount}} issue{{#isPlural}}s{{/isPlural}}</b> found in <b>{{filepathRel}}</b></p>
-    </header>
+    {{#messages}}
 
-    <div class="main">
+			<li class="issue severity-{{this.severity}}" data-index="{{this.count}}" data-file="txmt://open?url=file://{{../filepathAbs}}&line={{this.line}}&column={{this.column}}">
 
-      <ol class="messages">
+          <p class="details">
+            <span class="line">
+              <span class="row">{{this.line}}</span>:<span class="column">{{this.column}}</span>
+            </span>
+            <span class="message">{{{this.messageHTML}}}</span>
+          </p>
 
-      {{#messages}}
+          <pre class="source" data-pointer="{{this.pointer}}">{{this.source}}</pre>
 
-  			<li class="issue severity-{{this.severity}}">
-
-          <div class="source-wrapper" data-file="txmt://open?url=file://{{../filepathAbs}}&line={{this.line}}&column={{this.column}}">
-            <p class="location">
-
-              <span class="line">Line: {{this.line}}:{{this.column}}</span>
-
-              {{#if this.ruleId }}
-              <span class="rule-id">Rule: <a href="http://eslint.org/docs/rules/{{this.ruleId}}" title="Open docs for {{this.ruleId}}">{{this.ruleId}}</a></span>
-              {{/if}}
-
+          {{#unless this.ruleId }}
+            <p class="rule-id">Rule: none</p>
+          {{else}}
+            <p class="rule-id">Rule:
+              {{#unless this.isESLintRule }}
+                {{this.ruleId}}
+              {{else}}
+                <a href="http://eslint.org/docs/rules/{{this.ruleId}}" title="Open docs for {{this.ruleId}}">{{this.ruleId}}</a>
+              {{/unless}}
             </p>
+          {{/unless}}
 
-            <p class="message">{{this.message}}</p>
+			</li>
 
-            <pre class="source">{{this.source}}</pre>
+  	{{/messages}}
 
-          </div>
+    </ol>
 
-  			</li>
-
-    	{{/messages}}
-
-      </ol>
-
-    </div>
-
-  {{/unless}}
+  </main>
 
   <footer>
     <p><a href="http://eslint.org/" title="ESLint - Pluggable JavaScript linter">ESLint</a> Copyright jQuery Foundation and other contributors, <a href="https://jquery.org/">https://jquery.org/</a></p>
   </footer>
 
-  <script>
+  <script src="{{scriptMain}}"></script>
 
-    var issues = document.querySelectorAll( '.source-wrapper' );
-
-    [].forEach.call( issues, function ( issue ) {
-
-      issue.addEventListener( 'click', function (e) {
-
-        var target = e.target;
-        var currentTarget = e.currentTarget;
-        var url = currentTarget.getAttribute( 'data-file' );
-
-        if ( target.classList.contains( 'message-code' ) ) return;
-
-        window.location.assign( url );
-      });
-
-    });
-
-  </script>
 </body>
 </html>
