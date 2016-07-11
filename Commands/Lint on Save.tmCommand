@@ -7,10 +7,12 @@
 	<key>command</key>
 	<string>#!/usr/bin/env node
 
+const hrstart = process.hrtime();
 const bundle = require( process.env.TM_BUNDLE_SUPPORT );
 
 bundle({
-    view: 'tooltip'
+    view: 'tooltip',
+    hrstart: hrstart
 });</string>
 	<key>input</key>
 	<string>none</string>

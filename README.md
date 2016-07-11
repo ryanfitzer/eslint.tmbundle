@@ -2,6 +2,8 @@
 
 Lint your JavaScript files with [ESLint](http://eslint.org).
 
+Download latest [version](releases/latest).
+
 ![](./Support/images/screenshot-window.png)
 
 ![](./Support/images/screenshot-tooltip.png)
@@ -161,4 +163,17 @@ Example:
 
 ```
 TM_eslint_cwd = 'path/to/project'
+```
+
+### TM_eslint_debug ###
+
+  - Type: `Boolean`
+  - Default: `false`
+  
+Show any errors caught while trying to load or configure the ESLint `CLIEngine`.
+
+Example:
+
+```
+TM_eslint_debug = true
 ```
