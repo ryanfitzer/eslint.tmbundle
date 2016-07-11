@@ -2,7 +2,7 @@
 
 Lint your JavaScript files with [ESLint](http://eslint.org).
 
-Download latest [version](/releases/latest).
+Download latest [version](https://github.com/ryanfitzer/eslint.tmbundle/releases/latest).
 
 ![](Support/images/screenshot-window.png)
 
