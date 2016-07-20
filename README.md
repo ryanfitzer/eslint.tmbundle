@@ -33,7 +33,7 @@ Download latest [version](https://github.com/ryanfitzer/eslint.tmbundle/releases
 
   - ESLint installed your project's `node_modules` directory (see `TM_eslint_path` [option](#tm_eslint_path))
 
-  - An `.eslintrc*` file in your project's root (see #[6605](https://github.com/eslint/eslint/issues/6605))
+  - For ESLint versions < 3.1.0, there must be an `.eslintrc*` file in your project's root (see #[6605](https://github.com/eslint/eslint/issues/6605)).
 
 
 
