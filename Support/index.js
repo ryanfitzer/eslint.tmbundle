@@ -1,5 +1,9 @@
 /**
  * ESLint bundle for Textmate
+ *
+ * @todo Support marks
+ *      `"$TM_MATE" --set-mark "$TM_APP_PATH/Contents/Resources/TextMate.icns" --line 3`
+ *       `"$TM_MATE" --clear-mark "$TM_APP_PATH/Contents/Resources/TextMate.icns" --line 3`
  */
 const path = require( 'path' );
 const handlebars = require( 'handlebars' );
@@ -129,6 +133,11 @@ module.exports = function ( config ) {
         hrstart: config.hrstart
     };
 
+    if ( TMdebug ) {
+        process.stdout.write( `<h1>ESLint.tmbundle Debug</h1>` );
+        process.stdout.write( `<h2><code>cli</code></h2><pre>${JSON.stringify( cli, null, 2 )}</pre>` );
+    }
+
     if ( !cli || cli.isPathIgnored( TMfilePath ) ) {
         return;
     }
@@ -141,7 +150,6 @@ module.exports = function ( config ) {
 
         /*
             TODO Possible errors that need to be handled:
-                - No configuration provided (root .eslintrc* or TM_eslint_base_config_file set).
                 - TM_eslint_base_config_file set, but not found.
                 - Invalid configuration (via .eslintrc* or TM_eslint_base_config_file).
 
@@ -152,12 +160,17 @@ module.exports = function ( config ) {
         }
     }
 
+    // No configuration provided (.eslintrc* or TM_eslint_base_config_file).
+    if ( report === null ) return;
+
+    // TM_eslint_fix
     if ( cli.options.fix ) CLIEngine.outputFixes( report );
 
     data = composeData( report );
 
-    // Debug
-    // return console.log( `<pre>${JSON.stringify( data, null, 2 )}</pre>`);
+    if ( TMdebug ) {
+        process.stdout.write( `<h2><code>data</code></h2><pre>${JSON.stringify( data, null, 2 )}</pre>` );
+    }
 
     if ( config.view === 'tooltip' && !data.errorCount ) return;
 

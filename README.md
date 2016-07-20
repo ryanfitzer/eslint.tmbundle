@@ -90,7 +90,7 @@ Path to base configuration file. Only `*.js` or `*.json` extensions are currentl
 Example:
 
 ```
-TM_eslint_base_config = 'path/to/base/base-config.js'
+TM_eslint_base_config_file = 'path/to/base/base-config.js'
 ```
 
 
@@ -165,7 +165,7 @@ Example:
 TM_eslint_cwd = 'path/to/project'
 ```
 
-### TM_eslint_debug ###
+### `TM_eslint_debug` ###
 
   - Type: `Boolean`
   - Default: `false`
