@@ -1,3 +1,6 @@
+/**
+ * UI module for keyboard interaction with window view.
+ */
 !function () {
 
     var keys
