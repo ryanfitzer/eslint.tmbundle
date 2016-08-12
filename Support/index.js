@@ -108,7 +108,7 @@ function composeData( report ) {
 
     return {
         issueCount: issueCount,
-        isPlural: issueCount > 1,
+        isPlural: issueCount !== 1,
         errorCount: report.errorCount,
         warningCount: report.warningCount,
         messages: messages,
