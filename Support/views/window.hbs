@@ -10,12 +10,22 @@
 
   <header>
     <h1><span class="eslint-logo"><img src="{{eslintLogo}}"> ESLint <span class="eslint-version" title="{{eslintPath}}">v{{eslintVersion}}</span></span></h1>
-    <p class="meta"><b>{{issueCount}} issue{{#isPlural}}s{{/isPlural}}</b> found in {{filepathRel}} in {{time}}</p>
+    <p class="meta">
+      {{#unless bundleErrors}}
+        <b>{{issueCount}} issue{{#isPlural}}s{{/isPlural}}</b> found in {{filepathRel}} in {{time}}
+      {{else}}
+        {{time}}
+      {{/unless}}
+    </p>
   </header>
 
   <main>
 
     <ol class="issues">
+
+    {{#bundleErrors}}
+      <li><p>{{{this}}}</p></li>
+    {{/bundleErrors}}
 
     {{#messages}}
 

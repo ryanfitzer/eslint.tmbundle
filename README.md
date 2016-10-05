@@ -85,7 +85,7 @@ TM_eslint_config_file = 'path/to/config.js'
   - Type: `String`
   - Default: `null`
 
-Path to base configuration file. Only `*.js` or `*.json` extensions are currently supported (file is loaded using `require`, therefore `*.yaml` and files with no extension are currently supported).
+Path to base configuration file. Only `*.js` or `*.json` extensions are currently supported (file is loaded using `require`, therefore `*.yaml` and files with no extension are not currently supported).
 
 Example:
 

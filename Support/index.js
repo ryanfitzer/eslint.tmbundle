@@ -3,7 +3,7 @@
  *
  * @todo Support marks
  *      `"$TM_MATE" --set-mark "$TM_APP_PATH/Contents/Resources/TextMate.icns" --line 3`
- *       `"$TM_MATE" --clear-mark "$TM_APP_PATH/Contents/Resources/TextMate.icns" --line 3`
+ *      `"$TM_MATE" --clear-mark "$TM_APP_PATH/Contents/Resources/TextMate.icns" --line 3`
  */
 const path = require( 'path' );
 const handlebars = require( 'handlebars' );
@@ -32,26 +32,39 @@ const cssMain = `file://${viewsPath}/main.css?cacheBuster=${Date.now()}`;
 const scriptMain = `file://${viewsPath}/main.js?cacheBuster=${Date.now()}`;
 
 let CLIEngine;
+const bundleErrors = [];
+
+function requireTry( modulePath ) {
+
+    let result;
+
+    try {
+        result = require( modulePath );
+    }
+    catch ( err ) {
+
+        if ( TMdebug ) {
+            process.stdout.write( `${err}\n` );
+        }
+    }
+
+    return result;
+}
 
 function createCLI() {
 
+    const eslintModule = requireTry( eslintPath );
     const options = {
         fix: false,
         useEslintrc: true,
         cwd: TMcwd ? path.resolve( TMprojectDir, TMcwd ) : TMprojectDir
     };
 
-    // Fail silently if no eslint is found
-    try {
-        CLIEngine = require( eslintPath ).CLIEngine;
+    if ( eslintModule ) {
+        CLIEngine = eslintModule.CLIEngine;
     }
-    catch ( err ) {
-
-        if ( TMdebug ) {
-            process.stdout.write( `${err}` );
-        }
-
-        return false;
+    else {
+        bundleErrors.push( `Error: Cannot find module <code>${eslintPath}</code>` );
     }
 
     if ( TMfix ) {
@@ -81,64 +94,99 @@ function createCLI() {
         options.baseConfig = require( path.resolve( TMprojectDir, TMbaseConfigFile ) );
     }
 
+    if ( !CLIEngine ) return false;
+
     return new CLIEngine( options );
 }
 
 function composeData( report ) {
 
-    let eslintVersion;
-    const issueCount = report.errorCount + report.warningCount;
-
-    messages = report.results[0].messages.map( ( msg, index ) => {
-
-        const leadSpace = msg.source.match( /^\s*/ );
-        const count = leadSpace ? leadSpace[ 0 ].length : 0;
-        const pad = msg.column ? msg.column - count - 1 : 1;
-
-        msg.count = index + 1;
-        msg.isESLintRule = msg.ruleId && msg.ruleId.search( '/' ) < 0;
-        msg.pointer = `${Array( pad ).fill( '.' ).join( '' )}^`;
-        msg.source = msg.source.trim();
-        msg.messageHTML = msg.message.replace( /'(.*?)'/g, ( match, code ) => {
-            return `<code>${code}</code>`;
-        });
-
-        return msg;
-    });
-
-    return {
-        issueCount: issueCount,
-        isPlural: issueCount !== 1,
-        errorCount: report.errorCount,
-        warningCount: report.warningCount,
-        messages: messages,
+    const hasReport = Object.keys( report || {} ).length;
+    const eslintPkg = requireTry( `${eslintPath}/package.json` );
+    const result = {
         file: path.parse( TMfilePath ).base,
         filepathAbs: TMfilePath,
         filepathRel: path.relative( TMprojectDir, TMfilePath ),
         eslintPath: eslintPath,
         eslintLogo: eslintLogo,
-        eslintVersion: require( `${eslintPath}/package.json` ).version,
+        eslintVersion: eslintPkg ? eslintPkg.version : '?',
         cssMain: cssMain,
-        scriptMain: scriptMain
+        scriptMain: scriptMain,
+        bundleErrors: bundleErrors
     };
+
+    if ( hasReport ) {
+
+        const issueCount = report.errorCount + report.warningCount;
+
+        const messages = report.results[0].messages.map( ( msg, index ) => {
+
+            const leadSpace = msg.source.match( /^\s*/ );
+            const count = leadSpace ? leadSpace[ 0 ].length : 0;
+            const pad = msg.column ? msg.column - count - 1 : 1;
+
+            msg.count = index + 1;
+            msg.isESLintRule = msg.ruleId && msg.ruleId.search( '/' ) < 0;
+            msg.pointer = `${Array( pad ).fill( '.' ).join( '' )}^`;
+            msg.source = msg.source.trim();
+            msg.messageHTML = msg.message.replace( /'(.*?)'/g, ( match, code ) => {
+                return `<code>${code}</code>`;
+            });
+
+            return msg;
+        });
+
+        Object.assign( result, {
+            issueCount: issueCount,
+            isPlural: issueCount !== 1,
+            errorCount: report.errorCount,
+            warningCount: report.warningCount,
+            messages: messages,
+        })
+    }
+
+    return result;
 }
 
 module.exports = function ( config ) {
 
-    let error = false;
+    let data;
     let report = null;
     const cli = createCLI();
-    const viewPath = path.join( TMbundleSupport, `${config.view}.hbs` );
-    let data = {
-        hrstart: config.hrstart
-    };
+    const view = fsp.readFile( `${viewsPath}/${config.view}.hbs` );
+
+    const render = function( src ) {
+
+        const template = handlebars.compile( src );
+        const hrend = process.hrtime( config.hrstart );
+
+        data = data || composeData();
+
+        data.time = `${hrend[0]}s ${Math.floor( hrend[1]/1000000 )}ms`;
+
+        return process.stdout.write( template( data ) );
+    }
 
     if ( TMdebug ) {
         process.stdout.write( `<h1>ESLint.tmbundle Debug</h1>` );
         process.stdout.write( `<h2><code>cli</code></h2><pre>${JSON.stringify( cli, null, 2 )}</pre>` );
     }
 
-    if ( !cli || cli.isPathIgnored( TMfilePath ) ) {
+    if ( !cli ) {
+
+        bundleErrors.push( 'Error: No <code>CLIEngine</code> found.' );
+
+        if ( config.view === 'window' ) view.then( render );
+
+        return;
+    }
+
+    if ( cli.isPathIgnored( TMfilePath ) ) {
+
+        bundleErrors.push( `Error: Path ignored: <code>${TMfilePath}</code>.` );
+
+        if ( config.view === 'window' ) view.then( render );
+
         return;
     }
 
@@ -155,15 +203,20 @@ module.exports = function ( config ) {
 
             Test each scenario to see if each scenario can be discerned from the error provided by ESLint.
         */
-        if ( TMdebug ) {
-            return process.stdout.write( `${err}` );
-        }
+
+        bundleErrors.push( `${err}` );
     }
 
     // No configuration provided (.eslintrc* or TM_eslint_base_config_file).
-    if ( report === null ) return;
+    if ( report === null ) {
 
-    // TM_eslint_fix
+        bundleErrors.push( 'Error: No ESLint configuration provided (<code>.eslintrc*</code>).' );
+
+        if ( config.view === 'window' ) view.then( render );
+
+        return;
+    }
+
     if ( cli.options.fix ) CLIEngine.outputFixes( report );
 
     data = composeData( report );
@@ -174,13 +227,15 @@ module.exports = function ( config ) {
 
     if ( config.view === 'tooltip' && !data.errorCount ) return;
 
-    fsp.readFile( `${viewsPath}/${config.view}.hbs` ).then( function ( src ) {
+    view.then( render );
 
-        const template = handlebars.compile( src );
-        const hrend = process.hrtime( config.hrstart );
-
-        data.time = `${hrend[0]}s ${Math.floor( hrend[1]/1000000 )}ms`;
-
-        return process.stdout.write( template( data ) );
-    });
+    // view.then( function ( src ) {
+    //
+    //     const template = handlebars.compile( src );
+    //     const hrend = process.hrtime( config.hrstart );
+    //
+    //     data.time = `${hrend[0]}s ${Math.floor( hrend[1]/1000000 )}ms`;
+    //
+    //     return process.stdout.write( template( data ) );
+    // });
 }
