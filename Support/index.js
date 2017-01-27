@@ -123,7 +123,7 @@ function composeData( report ) {
 
             const leadSpace = msg.source.match( /^\s*/ );
             const count = leadSpace ? leadSpace[ 0 ].length : 0;
-            const pad = msg.column ? msg.column - count - 1 : 1;
+            const pad = msg.column > count ? msg.column - count - 1 : 0;
 
             msg.count = index + 1;
             msg.isESLintRule = msg.ruleId && msg.ruleId.search( '/' ) < 0;
