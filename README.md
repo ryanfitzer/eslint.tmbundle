@@ -165,6 +165,21 @@ Example:
 TM_eslint_cwd = 'path/to/project'
 ```
 
+
+### `TM_eslint_disable_on_save` ###
+
+  - Type: `Boolean`
+  - Default: `false`
+  
+Disable the the "Lint on Save" command.
+
+Example:
+
+```
+TM_eslint_disable_on_save = true
+```
+
+
 ### `TM_eslint_debug` ###
 
   - Type: `Boolean`

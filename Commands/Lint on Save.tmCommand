@@ -9,6 +9,9 @@
 
 const hrstart = process.hrtime();
 const bundle = require( process.env.TM_BUNDLE_SUPPORT );
+const TMdisable = /true/i.test( process.env.TM_eslint_disable_on_save );
+
+if ( TMdisable ) return;
 
 bundle({
     view: 'tooltip',
