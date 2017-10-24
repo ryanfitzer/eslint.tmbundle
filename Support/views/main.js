@@ -23,6 +23,8 @@
 
     function goToIssue( index ) {
 
+        if ( !issueURLs[ index ] ) return;
+
         issueIndex = '';
         window.location.assign( issueURLs[ index ] );
 
