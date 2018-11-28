@@ -121,12 +121,14 @@ function composeData( report ) {
 
     if ( hasReport ) {
 
+        const fileResult = report.results[0]
         const issueCount = report.errorCount + report.warningCount;
-        const fileSrc = SourceCode.splitLines( report.results[0].source || '' );
+        const fileSrc = fileResult.source || fileResult.output || '';
+        const srcLines = SourceCode.splitLines( fileSrc );
 
         const messages = report.results[0].messages.map( ( msg, index ) => {
 
-            msg.source = fileSrc[ msg.line - 1 ];
+            msg.source = srcLines[ msg.line - 1 ];
 
             const leadSpace = msg.source.match( /^\s*/ );
             const count = leadSpace ? leadSpace[ 0 ].length : 0;
