@@ -31,7 +31,9 @@ const eslintLogo = `file://${imagesPath}/eslint.svg`;
 const cssMain = `file://${viewsPath}/main.css?cacheBuster=${Date.now()}`;
 const scriptMain = `file://${viewsPath}/main.js?cacheBuster=${Date.now()}`;
 
+let eslint;
 let CLIEngine;
+let SourceCode;
 const bundleErrors = [];
 
 function requireTry( modulePath ) {
@@ -53,15 +55,17 @@ function requireTry( modulePath ) {
 
 function createCLI() {
 
-    const eslintModule = requireTry( eslintPath );
     const options = {
         fix: false,
         useEslintrc: true,
         cwd: TMcwd ? path.resolve( TMprojectDir, TMcwd ) : TMprojectDir
     };
 
-    if ( eslintModule ) {
-        CLIEngine = eslintModule.CLIEngine;
+    eslint = requireTry( eslintPath );
+
+    if ( eslint ) {
+        CLIEngine = eslint.CLIEngine;
+        SourceCode = eslint.SourceCode;
     }
     else {
         bundleErrors.push( `Error: Cannot find module <code>${eslintPath}</code>` );
@@ -118,8 +122,11 @@ function composeData( report ) {
     if ( hasReport ) {
 
         const issueCount = report.errorCount + report.warningCount;
+        const fileSrc = SourceCode.splitLines( report.results[0].source || '' );
 
         const messages = report.results[0].messages.map( ( msg, index ) => {
+
+            msg.source = fileSrc[ msg.line - 1 ];
 
             const leadSpace = msg.source.match( /^\s*/ );
             const count = leadSpace ? leadSpace[ 0 ].length : 0;
