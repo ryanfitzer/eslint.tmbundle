@@ -29,7 +29,9 @@ Download latest [version](https://github.com/ryanfitzer/eslint.tmbundle/releases
 
 ## Requirements ##
 
-  - [NodeJS](https://nodejs.org) >= v6.x.x
+  - [NodeJS](https://nodejs.org) >= v6.x.x is installed.
+
+  - `PATH` variable in **Textmate** > **Preferences** > **Variables** should be enabled and properly configured to include `/usr/bin` (the plugin looks for the `node` executable via `#!/usr/bin/env node`).
 
   - ESLint installed your project's `node_modules` directory (see `TM_eslint_path` [option](#tm_eslint_path))
 

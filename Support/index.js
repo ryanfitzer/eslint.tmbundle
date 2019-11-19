@@ -100,6 +100,12 @@ function createCLI() {
 
     if ( !CLIEngine ) return false;
 
+    if ( TMdebug ) {
+        process.stdout.write( `<h1>ESLint.tmbundle Debug</h1>` );
+        process.stdout.write( `<h2><code>$PATH</code></h2><pre>${process.env.PATH}</pre>` );
+        process.stdout.write( `<h2><code>CLIEngine Options</code></h2><pre>${JSON.stringify( options, null, 2 )}</pre>` );
+    }
+
     return new CLIEngine( options );
 }
 
@@ -177,7 +183,6 @@ module.exports = function ( config ) {
     }
 
     if ( TMdebug ) {
-        process.stdout.write( `<h1>ESLint.tmbundle Debug</h1>` );
         process.stdout.write( `<h2><code>cli</code></h2><pre>${JSON.stringify( cli, null, 2 )}</pre>` );
     }
 
@@ -226,25 +231,17 @@ module.exports = function ( config ) {
         return;
     }
 
-    if ( cli.options.fix ) CLIEngine.outputFixes( report );
+    CLIEngine.outputFixes( report );
 
     data = composeData( report );
 
     if ( TMdebug ) {
         process.stdout.write( `<h2><code>data</code></h2><pre>${JSON.stringify( data, null, 2 )}</pre>` );
+        process.stdout.write( `<h2><code>Config: ${ data.filepathRel }</code></h2><pre>${JSON.stringify( cli.getConfigForFile( data.filepathRel ), null, 2 )}</pre>` );
     }
 
     if ( config.view === 'tooltip' && !data.errorCount ) return;
 
     view.then( render );
 
-    // view.then( function ( src ) {
-    //
-    //     const template = handlebars.compile( src );
-    //     const hrend = process.hrtime( config.hrstart );
-    //
-    //     data.time = `${hrend[0]}s ${Math.floor( hrend[1]/1000000 )}ms`;
-    //
-    //     return process.stdout.write( template( data ) );
-    // });
 }
