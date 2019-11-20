@@ -36,7 +36,7 @@ let CLIEngine;
 let SourceCode;
 const bundleErrors = [];
 
-function requireTry( modulePath ) {
+function requireTry( modulePath, TMconfig ) {
 
     let result;
 
@@ -45,7 +45,7 @@ function requireTry( modulePath ) {
     }
     catch ( err ) {
 
-        if ( TMdebug ) {
+        if ( TMconfig.TMdebug || TMdebug ) {
             process.stdout.write( `${err}\n` );
         }
     }
@@ -53,7 +53,7 @@ function requireTry( modulePath ) {
     return result;
 }
 
-function createCLI() {
+function createCLI( TMconfig ) {
 
     const options = {
         fix: false,
@@ -61,7 +61,7 @@ function createCLI() {
         cwd: TMcwd ? path.resolve( TMprojectDir, TMcwd ) : TMprojectDir
     };
 
-    eslint = requireTry( eslintPath );
+    eslint = requireTry( eslintPath, TMconfig );
 
     if ( eslint ) {
         CLIEngine = eslint.CLIEngine;
@@ -100,19 +100,19 @@ function createCLI() {
 
     if ( !CLIEngine ) return false;
 
-    if ( TMdebug ) {
+    if ( TMconfig.TMdebug || TMdebug ) {
         process.stdout.write( `<h1>ESLint.tmbundle Debug</h1>` );
         process.stdout.write( `<h2><code>$PATH</code></h2><pre>${process.env.PATH}</pre>` );
-        process.stdout.write( `<h2><code>CLIEngine Options</code></h2><pre>${JSON.stringify( options, null, 2 )}</pre>` );
+        process.stdout.write( `<h2><code>CLIEngine v${CLIEngine.version} options</code></h2><pre>${JSON.stringify( options, null, 2 )}</pre>` );
     }
 
     return new CLIEngine( options );
 }
 
-function composeData( report ) {
+function composeData( report, TMconfig ) {
 
     const hasReport = Object.keys( report || {} ).length;
-    const eslintPkg = requireTry( `${eslintPath}/package.json` );
+    const eslintPkg = requireTry( `${eslintPath}/package.json`, TMconfig );
     const result = {
         file: path.parse( TMfilePath ).base,
         filepathAbs: TMfilePath,
@@ -163,34 +163,30 @@ function composeData( report ) {
     return result;
 }
 
-module.exports = function ( config ) {
+module.exports = function ( TMconfig ) {
 
     let data;
     let report = null;
-    const cli = createCLI();
-    const view = fsp.readFile( `${viewsPath}/${config.view}.hbs` );
+    const cli = createCLI( TMconfig );
+    const view = fsp.readFile( `${viewsPath}/${TMconfig.view}.hbs` );
 
     const render = function( src ) {
 
         const template = handlebars.compile( src );
-        const hrend = process.hrtime( config.hrstart );
+        const hrend = process.hrtime( TMconfig.hrstart );
 
-        data = data || composeData();
+        data = data || composeData( null, TMconfig );
 
         data.time = `${hrend[0]}s ${Math.floor( hrend[1]/1000000 )}ms`;
 
         return process.stdout.write( template( data ) );
     }
 
-    if ( TMdebug ) {
-        process.stdout.write( `<h2><code>cli</code></h2><pre>${JSON.stringify( cli, null, 2 )}</pre>` );
-    }
-
     if ( !cli ) {
 
         bundleErrors.push( 'Error: No <code>CLIEngine</code> found.' );
 
-        if ( config.view === 'window' ) view.then( render );
+        if ( TMconfig.view === 'window' ) view.then( render );
 
         return;
     }
@@ -199,7 +195,7 @@ module.exports = function ( config ) {
 
         bundleErrors.push( `Error: Path ignored: <code>${TMfilePath}</code>.` );
 
-        if ( config.view === 'window' ) view.then( render );
+        if ( TMconfig.view === 'window' ) view.then( render );
 
         return;
     }
@@ -226,21 +222,21 @@ module.exports = function ( config ) {
 
         bundleErrors.push( 'Error: No ESLint configuration provided (<code>.eslintrc*</code>).' );
 
-        if ( config.view === 'window' ) view.then( render );
+        if ( TMconfig.view === 'window' ) view.then( render );
 
         return;
     }
 
     CLIEngine.outputFixes( report );
 
-    data = composeData( report );
+    data = composeData( report, TMconfig );
 
-    if ( TMdebug ) {
-        process.stdout.write( `<h2><code>data</code></h2><pre>${JSON.stringify( data, null, 2 )}</pre>` );
-        process.stdout.write( `<h2><code>Config: ${ data.filepathRel }</code></h2><pre>${JSON.stringify( cli.getConfigForFile( data.filepathRel ), null, 2 )}</pre>` );
+    if ( TMconfig.TMdebug || TMdebug ) {
+        process.stdout.write( `<h2>Report <code>data</code></h2><pre>${JSON.stringify( data, null, 2 )}</pre>` );
+        process.stdout.write( `<h2>Config for <code>${ data.filepathRel }</code></h2><pre>${JSON.stringify( cli.getConfigForFile( data.filepathRel ), null, 2 )}</pre>` );
     }
 
-    if ( config.view === 'tooltip' && !data.errorCount ) return;
+    if ( TMconfig.view === 'tooltip' && !data.errorCount ) return;
 
     view.then( render );
 

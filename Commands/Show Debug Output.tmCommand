@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>saveActiveFile</string>
+	<key>command</key>
+	<string>#!/usr/bin/env node
+
+const hrstart = process.hrtime();
+const bundle = require( process.env.TM_BUNDLE_SUPPORT );
+const TMdisable = /true/i.test( process.env.TM_eslint_disable_on_save );
+
+if ( TMdisable ) return;
+
+bundle({
+    view: 'window',
+    hrstart: hrstart,
+    TMdebug: true
+});</string>
+	<key>input</key>
+	<string>document</string>
+	<key>inputFormat</key>
+	<string>text</string>
+	<key>name</key>
+	<string>Show Debug Output</string>
+	<key>outputCaret</key>
+	<string>afterOutput</string>
+	<key>outputFormat</key>
+	<string>html</string>
+	<key>outputLocation</key>
+	<string>newWindow</string>
+	<key>uuid</key>
+	<string>96F87269-F5DE-480E-8314-9F64FDCDCE87</string>
+	<key>version</key>
+	<integer>2</integer>
+</dict>
+</plist>
