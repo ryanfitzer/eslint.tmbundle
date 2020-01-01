@@ -1,6 +1,6 @@
 {
   "name": "eslint.tmbundle",
-  "version": "1.6.4",
+  "version": "1.6.0",
   "description": "ESLint Bundle for Textmate",
   "main": "./Support/index.js",
   "author": "Ryan Fitzer",
