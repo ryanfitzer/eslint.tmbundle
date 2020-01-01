@@ -29,7 +29,7 @@ html_footer</string>
 	<key>outputLocation</key>
 	<string>newWindow</string>
 	<key>scope</key>
-	<string>source.js</string>
+	<string>source.js.*</string>
 	<key>uuid</key>
 	<string>FBC97EA4-C991-45DC-AFC3-67C71F89F139</string>
 	<key>version</key>

@@ -4,48 +4,58 @@ Lint your JavaScript files with [ESLint](http://eslint.org).
 
 Download latest [version](https://github.com/ryanfitzer/eslint.tmbundle/releases/latest).
 
-![](Support/images/screenshot-window.png)
+![Formatted view](Support/images/screenshot-window.png)
 
-![](Support/images/screenshot-tooltip.png)
+![Tooltip view](Support/images/screenshot-tooltip.png)
 
 
 
 ## Features ##
 
-  - Uses your project's `eslint` package. This enables you to lint with the version of ESLint specific to each project.
+- **`⌘S`** Lints the current document on save and shows errors via an unobtrusive tooltip (no tooltip is shown for warnings).
 
-  - Configurable per project via `.tm_properties`.
+- **`^L`** Lints the current document and shows a formatted results view, which includes:
 
-  - Lints every time you save the current document and shows errors via an unobtrusive tooltip. No tooltip is shown for warnings.
+    - The ESLint version in use.
+    - The issue severity ("warn" ⚠️ vs. "error" 🚫️).
+    - A link to the documentation for the rule related to the issue.
+    - The ability to focus the cursor back to the line and column where the issue originated:
+        
+        - Clicking the issue source.
+        - Pressing the number associated with the issue.
 
-  - Lint the current document with the shortcut `⌃L` to see the expanded view, which includes:
-    - ESLint version
-    - path to current document
-    - issue severity ("warn" ⚠️ vs. "error" 🚫️)
-    - link to documentation for rule related to the reported issue
-    - link to focus cursor to the line and column where to the reported issue
+- Uses your project's local `eslint` package. This enables you to lint with the version of ESLint specific to each project.
+
+- Configurable per project via `.tm_properties`.
 
 
 
 ## Requirements ##
 
-  - [NodeJS](https://nodejs.org) >= v6.x.x is installed.
+- [NodeJS](https://nodejs.org) >= v6.x.x is installed.
 
-  - `PATH` variable in **Textmate** > **Preferences** > **Variables** should be enabled and properly configured to include `/usr/bin` (the plugin looks for the `node` executable via `#!/usr/bin/env node`).
+- ESLint >= v5.x.x.
 
-  - ESLint installed your project's `node_modules` directory (see `TM_eslint_path` [option](#tm_eslint_path))
+- `PATH` variable in **Textmate** > **Preferences** > **Variables** should be enabled and properly configured to include `/usr/bin` (the plugin looks for the `node` executable via `#!/usr/bin/env node`).
 
-  - For ESLint versions < 3.1.0, there must be an `.eslintrc*` file in your project's root (see #[6605](https://github.com/eslint/eslint/issues/6605)).
+- ESLint installed your project's `node_modules` directory (customizable via `TM_eslint_path` [option](#tm_eslint_path))
 
 
 
 ## Commands ##
 
-  - `⌃L`: **Lint** lints current document and shows issues in new window.
+- **Lint** `⌃L`: Lints current document and shows issues in new window.
 
-  - `⌘S`: **Lint on Save** lints current document shows issues in a tooltip.
+- **Lint on Save** `⌘S`: Lints current document and shows errors in a tooltip.
 
-  - `^H`: **Help** Shows `README.md` in new window.
+- **Help** `^⇧L`: Shows `README.md` in new window.
+
+- **Debug** `^H`: Shows bundle debugging information in new window.
+
+**Experimental**
+
+- **Enable Live Lint** `^⌘L`: The same as **Lint** `⌃L`, but auto-refreshes on document changes (as long a the results view stays open).
+
 
 
 

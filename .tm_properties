@@ -1,0 +1,54 @@
+###########################
+## ESLint Bundle Options ##
+###########################
+
+# TM_eslint_path = './node_modules/eslint'
+## Type: String
+## Default: ./node_modules/eslint
+## Path to eslint package. Must include a "package.json" file.
+
+# TM_eslint_config_file = 'path/to/config.js'
+## Type: String
+## Default: null
+## Path to the configuration file to use.
+
+# TM_eslint_base_config_file = 'path/to/base/base-config.js'
+## Type: String
+## Default: null
+## Path to base configuration file. Only *.js or *.json extensions are currently supported (file is loaded using require, therefore *.yaml and files with no extension are not currently supported).
+
+# TM_eslint_use_eslintrc = false
+## Type: Boolean
+## Default: true
+## Set to false to disable use of .eslintrc* files.
+
+# TM_eslint_fix = false
+## Type: Boolean
+## Default: false
+## Output fixes source for errors and warnings that ESLint can fix. All rules in the documentation that show a wrench icon are fixable.
+
+# TM_eslint_ignore_path = 'path/to/ignore/file'
+## Type: String
+## Default: null
+## Use a non-default ignore file. From Ignoring Files and Directories:
+## When ESLint is run, it looks in the current working directory to find an .eslintignore file before determining which files to lint. If this file is found, then those preferences are applied when traversing directories. Only one .eslintignore file can be used at a time, so .eslintignore files other than the one in the current working directory will not be used.
+
+# TM_eslint_ignore_pattern = 'first/pattern, second/pattern'
+## Type: String
+## Default: null
+## Comma separated list of glob patterns.
+
+# TM_eslint_cwd = 'path/to/project'
+## Type: String
+## Default:
+## Path to a directory that should be considered as the current working directory.
+
+# TM_eslint_disable_on_save = true
+## Type: Boolean
+## Default: false
+## Disable the the "Lint on Save" command.
+
+# TM_eslint_debug = true
+## Type: Boolean
+## Default: false
+## Show any errors caught while trying to load or configure the ESLint CLIEngine.

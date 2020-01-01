@@ -7,13 +7,17 @@
 	<key>command</key>
 	<string>#!/usr/bin/env node
 
+const supportPath = process.env.TM_BUNDLE_SUPPORT;
 const hrstart = process.hrtime();
-const bundle = require( process.env.TM_BUNDLE_SUPPORT );
+const bundle = require( supportPath );
+const readInput = require( `${ supportPath }/lib/read-input` );
 
-bundle({
-    view: 'window',
-    hrstart: hrstart
-});</string>
+readInput( ( input ) =&gt; {
+    bundle({
+        view: 'window',
+        hrstart: hrstart
+    }, input );
+} );</string>
 	<key>input</key>
 	<string>document</string>
 	<key>inputFormat</key>
@@ -29,9 +33,9 @@ bundle({
 	<key>outputLocation</key>
 	<string>newWindow</string>
 	<key>scope</key>
-	<string>source.js</string>
+	<string>source.js.*</string>
 	<key>uuid</key>
-	<string>C20A73AE-9CDA-4A29-8500-9E2FB91C116B</string>
+	<string>5150AEB0-1AFC-4B55-9B00-C03BD9350FFD</string>
 	<key>version</key>
 	<integer>2</integer>
 </dict>

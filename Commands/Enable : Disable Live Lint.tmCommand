@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>autoRefresh</key>
+	<array>
+		<string>DocumentChanged</string>
+	</array>
+	<key>command</key>
+	<string>#!/usr/bin/env node
+
+const supportPath = process.env.TM_BUNDLE_SUPPORT;
+const hrstart = process.hrtime();
+const bundle = require( supportPath );
+const readInput = require( `${ supportPath }/lib/read-input` );
+
+readInput( ( input ) =&gt; {
+    bundle({
+        view: 'window',
+        hrstart: hrstart
+    }, input );
+} );</string>
+	<key>input</key>
+	<string>document</string>
+	<key>keyEquivalent</key>
+	<string>^@l</string>
+	<key>name</key>
+	<string>Enable / Disable Live Lint</string>
+	<key>outputFormat</key>
+	<string>html</string>
+	<key>outputLocation</key>
+	<string>newWindow</string>
+	<key>scope</key>
+	<string>source.js.*</string>
+	<key>uuid</key>
+	<string>3A1C449E-4551-445F-8E3E-7E8A24149845</string>
+</dict>
+</plist>

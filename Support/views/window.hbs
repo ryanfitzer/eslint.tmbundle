@@ -11,8 +11,8 @@
   <header>
     <h1><span class="eslint-logo"><img src="{{eslintLogo}}"> ESLint <span class="eslint-version" title="{{eslintPath}}">v{{eslintVersion}}</span></span></h1>
     <p class="meta">
-      {{#unless bundleErrors}}
-        <b>{{issueCount}} issue{{#isPlural}}s{{/isPlural}}</b> found in {{filepathRel}} in {{time}}
+      {{#unless bundleErrors }}
+        <b>{{issueCount}} issue{{#isPlural}}s{{/isPlural}}</b> found in <code>{{filepathRel}}</code>
       {{else}}
         {{time}}
       {{/unless}}
@@ -30,6 +30,8 @@
     {{#messages}}
 
 			<li class="issue severity-{{this.severity}}" data-index="{{this.count}}" data-file="txmt://open?url=file://{{../filepathAbs}}&line={{this.line}}&column={{this.column}}">
+
+        {{#unless fatal }}
 
           <p class="details">
             <span class="line">
@@ -52,6 +54,21 @@
             </p>
           {{/unless}}
 
+        {{else}}
+
+          <p class="details">
+            <span class="line">
+              <span class="row">{{this.line}}</span>:<span class="column">{{this.column}}</span>
+            </span>
+            <span class="message">Fatal error</span>
+          </p>
+
+          <pre class="source">{{{this.messageHTML}}}</pre>
+
+          <p class="rule-id">Rule: none</p>
+
+        {{/unless}}
+
 			</li>
 
   	{{/messages}}
@@ -61,7 +78,7 @@
   </main>
 
   <footer>
-    <p><a href="http://eslint.org/" title="ESLint - Pluggable JavaScript linter">ESLint</a> Copyright jQuery Foundation and other contributors, <a href="https://jquery.org/">https://jquery.org/</a></p>
+    <p><a href="http://eslint.org/" title="ESLint - Pluggable JavaScript linter">ESLint</a> Copyright jQuery Foundation and other contributors, <a href="https://jquery.org/">https://jquery.org</a>. Linted in <code>{{time}}</code></p>
   </footer>
 
   <script src="{{scriptMain}}"></script>

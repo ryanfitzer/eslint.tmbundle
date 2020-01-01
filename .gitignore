@@ -1,4 +1,19 @@
-*.orig
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+# Defaults
+# -----------------
 .DS_Store
-npm-debug.log
-.tm_properties
+yarn.lock
+npm-debug.log*
+package-lock.json
+
+# User Configuration
+# ------------------
+.vs/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Project Specific
+# -----------------
+.notes

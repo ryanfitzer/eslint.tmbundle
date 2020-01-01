@@ -11,9 +11,10 @@ const fsp = require( './lib/fsp' );
 
 const TMbundleSupport = process.env.TM_BUNDLE_SUPPORT;
 const TMfilePath = process.env.TM_FILEPATH;
+const TMdir = process.env.TM_DIRECTORY;
 const TMprojectDir = process.env.TM_PROJECT_DIRECTORY;
 
-const TMcwd = process.env.TM_eslint_cwd;
+const TMcwd = process.env.TM_eslint_cwd || TMdir;
 const TMfix = process.env.TM_eslint_fix;
 const TMdebug = process.env.TM_eslint_debug;
 const TMeslintPath = process.env.TM_eslint_path;
@@ -76,7 +77,7 @@ function createCLI( TMconfig ) {
     }
 
     if ( TMuseEslintrc ) {
-        options.fix = /true/i.test( TMuseEslintrc );
+        options.useEslintrc = /true/i.test( TMuseEslintrc );
     }
 
     if ( TMignorePattern ) {
@@ -103,6 +104,7 @@ function createCLI( TMconfig ) {
     if ( TMconfig.TMdebug || TMdebug ) {
         process.stdout.write( `<h1>ESLint.tmbundle Debug</h1>` );
         process.stdout.write( `<h2><code>$PATH</code></h2><pre>${process.env.PATH}</pre>` );
+        process.stdout.write( `<h2><code>TMconfig</code></h2><pre>${JSON.stringify( TMconfig, null, 2 )}</pre>` );
         process.stdout.write( `<h2><code>CLIEngine v${CLIEngine.version} options</code></h2><pre>${JSON.stringify( options, null, 2 )}</pre>` );
     }
 
@@ -163,7 +165,7 @@ function composeData( report, TMconfig ) {
     return result;
 }
 
-module.exports = function ( TMconfig ) {
+module.exports = function ( TMconfig, stdin ) {
 
     let data;
     let report = null;
@@ -202,7 +204,7 @@ module.exports = function ( TMconfig ) {
 
     // Make sure ESLint is configured
     try {
-        report = cli.executeOnFiles( [ TMfilePath ] );
+        report = cli.executeOnText( stdin, TMfilePath );
     }
     catch ( err ) {
 
@@ -230,10 +232,12 @@ module.exports = function ( TMconfig ) {
     CLIEngine.outputFixes( report );
 
     data = composeData( report, TMconfig );
+    data.stdin = stdin;
 
     if ( TMconfig.TMdebug || TMdebug ) {
-        process.stdout.write( `<h2>Report <code>data</code></h2><pre>${JSON.stringify( data, null, 2 )}</pre>` );
-        process.stdout.write( `<h2>Config for <code>${ data.filepathRel }</code></h2><pre>${JSON.stringify( cli.getConfigForFile( data.filepathRel ), null, 2 )}</pre>` );
+        process.stdout.write( `<summary><h2>Report <code>data</code></h2><details><pre>${JSON.stringify( data, null, 2 )}</pre></details></summary>` );
+        process.stdout.write( `<summary><h2>ESLint config for <code>${ data.filepathRel }</code></h2><details><pre>${JSON.stringify( cli.getConfigForFile( data.filepathRel ), null, 2 )}</pre></details></summary>` );
+        process.stdout.write( `<summary><h2>Source</h2><details><pre>${ stdin }</pre></details></summary>` );
     }
 
     if ( TMconfig.view === 'tooltip' && !data.errorCount ) return;

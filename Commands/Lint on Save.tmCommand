@@ -7,18 +7,22 @@
 	<key>command</key>
 	<string>#!/usr/bin/env node
 
+const supportPath = process.env.TM_BUNDLE_SUPPORT;
 const hrstart = process.hrtime();
-const bundle = require( process.env.TM_BUNDLE_SUPPORT );
+const bundle = require( supportPath );
+const readInput = require( `${ supportPath }/lib/read-input` );
 const TMdisable = /true/i.test( process.env.TM_eslint_disable_on_save );
 
 if ( TMdisable ) return;
 
-bundle({
-    view: 'tooltip',
-    hrstart: hrstart
-});</string>
+readInput( ( input ) =&gt; {
+    bundle({
+        view: 'tooltip',
+        hrstart: hrstart
+    }, input );
+} );</string>
 	<key>input</key>
-	<string>none</string>
+	<string>document</string>
 	<key>inputFormat</key>
 	<string>text</string>
 	<key>keyEquivalent</key>
@@ -32,7 +36,7 @@ bundle({
 	<key>outputLocation</key>
 	<string>toolTip</string>
 	<key>scope</key>
-	<string>source.js</string>
+	<string>source.js.*</string>
 	<key>uuid</key>
 	<string>0A1CA104-1294-496D-910B-771B204BAC7F</string>
 	<key>version</key>
