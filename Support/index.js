@@ -92,9 +92,12 @@ function createCLI( eslint, TMconfig ) {
 
     if ( TMconfig.TMdebug || TMdebug ) {
         process.stdout.write( `<h1>ESLint.tmbundle Debug</h1>` );
-        process.stdout.write( `<h2><code>$PATH</code></h2><pre>${process.env.PATH}</pre>` );
-        process.stdout.write( `<h2><code>TMconfig</code></h2><pre>${JSON.stringify( TMconfig, null, 2 )}</pre>` );
-        process.stdout.write( `<h2><code>ESLint v${eslint.version} options</code></h2><pre>${JSON.stringify( options, null, 2 )}</pre>` );
+        process.stdout.write( `<h2><code>Node.js Version</code></h2><pre>${ process.versions.node }</pre>` );
+        process.stdout.write( `<h2><code>Node.js Executable Path</code></h2><pre>${ process.execPath }</pre>` );
+        process.stdout.write( `<h2><code>ESLint Module Path</code></h2><pre>${ eslintPath }</pre>` );
+        process.stdout.write( `<h2><code>Environment Path</code></h2><pre>${ process.env.PATH }</pre>` );
+        process.stdout.write( `<h2><code>TMconfig</code></h2><pre>${ JSON.stringify( TMconfig, null, 2 ) }</pre>` );
+        process.stdout.write( `<h2><code>ESLint v${eslint.version} options</code></h2><pre>${ JSON.stringify( options, null, 2 ) }</pre>` );
     }
 
     return new eslint( options );
