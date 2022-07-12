@@ -32,9 +32,6 @@ const eslintLogo = `file://${imagesPath}/eslint.svg`;
 const cssMain = `file://${viewsPath}/main.css?cacheBuster=${Date.now()}`;
 const scriptMain = `file://${viewsPath}/main.js?cacheBuster=${Date.now()}`;
 
-let eslint;
-let CLIEngine;
-let SourceCode;
 const bundleErrors = [];
 
 function requireTry( modulePath, TMconfig ) {
@@ -54,7 +51,7 @@ function requireTry( modulePath, TMconfig ) {
     return result;
 }
 
-function createCLI( TMconfig ) {
+function createCLI( eslint, TMconfig ) {
 
     const options = {
         fix: false,
@@ -62,14 +59,8 @@ function createCLI( TMconfig ) {
         cwd: TMcwd ? path.resolve( TMprojectDir, TMcwd ) : TMprojectDir
     };
 
-    eslint = requireTry( eslintPath, TMconfig );
-
-    if ( eslint ) {
-        CLIEngine = eslint.CLIEngine;
-        SourceCode = eslint.SourceCode;
-    }
-    else {
-        bundleErrors.push( `Error: Cannot find module <code>${eslintPath}</code>` );
+    if ( !eslint ) {
+        bundleErrors.push( `Error: Cannot find module <code>ESLint: ${eslintPath}</code>` );
     }
 
     if ( TMfix ) {
@@ -99,21 +90,20 @@ function createCLI( TMconfig ) {
         options.baseConfig = require( path.resolve( TMprojectDir, TMbaseConfigFile ) );
     }
 
-    if ( !CLIEngine ) return false;
-
     if ( TMconfig.TMdebug || TMdebug ) {
         process.stdout.write( `<h1>ESLint.tmbundle Debug</h1>` );
         process.stdout.write( `<h2><code>$PATH</code></h2><pre>${process.env.PATH}</pre>` );
         process.stdout.write( `<h2><code>TMconfig</code></h2><pre>${JSON.stringify( TMconfig, null, 2 )}</pre>` );
-        process.stdout.write( `<h2><code>CLIEngine v${CLIEngine.version} options</code></h2><pre>${JSON.stringify( options, null, 2 )}</pre>` );
+        process.stdout.write( `<h2><code>ESLint v${eslint.version} options</code></h2><pre>${JSON.stringify( options, null, 2 )}</pre>` );
     }
 
-    return new CLIEngine( options );
+    return new eslint( options );
 }
 
-function composeData( report, TMconfig ) {
+function composeData( report, SourceCode, TMconfig ) {
 
     const hasReport = Object.keys( report || {} ).length;
+    const bundlePkg = require( '../package.json' );
     const eslintPkg = requireTry( `${eslintPath}/package.json`, TMconfig );
     const result = {
         file: path.parse( TMfilePath ).base,
@@ -124,17 +114,18 @@ function composeData( report, TMconfig ) {
         eslintVersion: eslintPkg ? eslintPkg.version : '?',
         cssMain: cssMain,
         scriptMain: scriptMain,
-        bundleErrors: bundleErrors
+        bundleErrors: bundleErrors,
+        bundleVersion: bundlePkg.version
     };
 
     if ( hasReport ) {
-
-        const fileResult = report.results[0]
-        const issueCount = report.errorCount + report.warningCount;
+        
+        const fileResult = report[0];
         const fileSrc = fileResult.source || fileResult.output || '';
         const srcLines = SourceCode.splitLines( fileSrc );
+        const issueCount = fileResult.errorCount + fileResult.warningCount;
 
-        const messages = report.results[0].messages.map( ( msg, index ) => {
+        const messages = fileResult.messages.map( ( msg, index ) => {
 
             msg.source = srcLines[ msg.line - 1 ];
 
@@ -156,8 +147,8 @@ function composeData( report, TMconfig ) {
         Object.assign( result, {
             issueCount: issueCount,
             isPlural: issueCount !== 1,
-            errorCount: report.errorCount,
-            warningCount: report.warningCount,
+            errorCount: fileResult.errorCount,
+            warningCount: fileResult.warningCount,
             messages: messages,
         })
     }
@@ -165,11 +156,12 @@ function composeData( report, TMconfig ) {
     return result;
 }
 
-module.exports = function ( TMconfig, stdin ) {
+module.exports = async function ( TMconfig, stdin ) {
 
     let data;
     let report = null;
-    const cli = createCLI( TMconfig );
+    const { ESLint, SourceCode } = requireTry( eslintPath, TMconfig );
+    const cli = createCLI( ESLint, TMconfig );
     const view = fsp.readFile( `${viewsPath}/${TMconfig.view}.hbs` );
 
     const render = function( src ) {
@@ -193,7 +185,7 @@ module.exports = function ( TMconfig, stdin ) {
         return;
     }
 
-    if ( cli.isPathIgnored( TMfilePath ) ) {
+    if ( await cli.isPathIgnored( TMfilePath ) ) {
 
         bundleErrors.push( `Error: Path ignored: <code>${TMfilePath}</code>.` );
 
@@ -204,7 +196,7 @@ module.exports = function ( TMconfig, stdin ) {
 
     // Make sure ESLint is configured
     try {
-        report = cli.executeOnText( stdin, TMfilePath );
+        report = await cli.lintText( stdin, { filePath: TMfilePath} );
     }
     catch ( err ) {
 
@@ -229,14 +221,14 @@ module.exports = function ( TMconfig, stdin ) {
         return;
     }
 
-    CLIEngine.outputFixes( report );
+    ESLint.outputFixes( report );
 
-    data = composeData( report, TMconfig );
+    data = composeData( report, SourceCode, TMconfig );
     data.stdin = stdin;
 
     if ( TMconfig.TMdebug || TMdebug ) {
         process.stdout.write( `<summary><h2>Report <code>data</code></h2><details><pre>${JSON.stringify( data, null, 2 )}</pre></details></summary>` );
-        process.stdout.write( `<summary><h2>ESLint config for <code>${ data.filepathRel }</code></h2><details><pre>${JSON.stringify( cli.getConfigForFile( data.filepathRel ), null, 2 )}</pre></details></summary>` );
+        process.stdout.write( `<summary><h2>ESLint config for <code>${ data.filepathRel }</code></h2><details><pre>${JSON.stringify( cli.calculateConfigForFile( data.filepathRel ), null, 2 )}</pre></details></summary>` );
         process.stdout.write( `<summary><h2>Source</h2><details><pre>${ stdin }</pre></details></summary>` );
     }
 
