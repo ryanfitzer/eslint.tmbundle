@@ -132,14 +132,14 @@ function composeData( report, SourceCode, TMconfig ) {
 
             msg.source = srcLines[ msg.line - 1 ];
 
-            const leadSpace = msg.source.match( /^\s*/ );
+            const leadSpace = msg.source && msg.source.match( /^\s*/ );
             const count = leadSpace ? leadSpace[ 0 ].length : 0;
             const pad = msg.column > count ? msg.column - count - 1 : 0;
 
             msg.count = index + 1;
             msg.isESLintRule = msg.ruleId && msg.ruleId.search( '/' ) < 0;
             msg.pointer = `${Array( pad ).fill( '.' ).join( '' )}^`;
-            msg.source = msg.source.trim();
+            msg.source = msg.source ? msg.source.trim() : msg.source;
             msg.messageHTML = msg.message.replace( /'(.*?)'/g, ( match, code ) => {
                 return `<code>${code}</code>`;
             });
