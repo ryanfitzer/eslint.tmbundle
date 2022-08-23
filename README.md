@@ -32,7 +32,7 @@ Download latest [version](https://github.com/ryanfitzer/eslint.tmbundle/releases
 
 ## Requirements ##
 
-- [NodeJS](https://nodejs.org) >= v6.x.x is installed.
+- [NodeJS](https://nodejs.org) `>= v6.0.0` is installed.
 
 - ESLint >= v5.x.x.
 
